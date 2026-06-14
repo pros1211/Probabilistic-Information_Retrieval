@@ -64,7 +64,7 @@ public class Main {
             // ambil id query dan text query
             int queryId = entry.getKey();
             String queryText = entry.getValue();
-            System.out.println("query: " + queryText);
+            System.out.println("\nquery: " + queryText);
             // jika query tidak ada di relevance judgment maka tidak dievaluasi
             if (!relevanceJudgement.containsKey(queryId))
                 continue;
@@ -109,7 +109,7 @@ public class Main {
             }
             queriesEvaluated++;
             double tpPrecision = (double) tpHits / 10;
-            System.out.printf("\n>> Precision@10 Query %d | BIM: %.0f%% vs Two-Poisson: %.0f%%\n",
+            System.out.printf("\nPrecision@10 Query %d | BIM: %.0f%% vs Two-Poisson: %.0f%%\n",
                     queryId, precisionBIM * 100, tpPrecision * 100);
             totalPrecisionTP += tpPrecision;
         }
