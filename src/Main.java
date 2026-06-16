@@ -36,7 +36,23 @@ public class Main {
         System.out.println("====================================\n");
     }
 
-    public static void main(String[] args) throws IOException {
+    // method untuk menampilkan hasil dan kalkulasi metrik agar format seragam
+    public static void displayResults(String modelName, List<Map.Entry<Integer, Double>> results, HashSet<Integer> relevantDocs) {
+        int limit = Math.min(10, results.size());
+        System.out.println("\n");
+        System.out.println("TOP " + limit + " " + modelName.toUpperCase() + "");
+        System.out.println("Rank\tDocID\tSkor\tRelevan?");
+        for (int i = 0; i < limit; i++) {
+            int docId = results.get(i).getKey();
+            double score = results.get(i).getValue();
+            boolean isRelevant = relevantDocs.contains(docId);
+            System.out.printf(" %2d\t%d\t%.4f\t  %s\n", (i + 1), docId, score, isRelevant ?  "✅" : "❌");
+        }
+        System.out.println();
+        System.out.println("METRIK EVALUASI " + modelName.toUpperCase());
+        Evaluator.calculateMetrics(results, relevantDocs);
+    }
+public static void main(String[] args) throws IOException {
         // atribut docFile cranfield berisi dokumen cranfield
         File docFile = new File("./datasets/cran.all.1400");
         // atribut query test dari cranfield dataset
@@ -74,9 +90,9 @@ public class Main {
             // ambil id query dan text query
             int queryId = entry.getKey();
             String queryText = entry.getValue();
-            System.out.println("\n=======================================================");
-            System.out.println("QUERY ID: " + queryId + " | TEKS: " + queryText);
-            System.out.println("=======================================================");
+            System.out.println("\n\n\n\n");
+            System.out.println("==================================================================");
+            System.out.println("Query #" + queryId + "\n“" + queryText + "”");
             
             // jika query tidak ada di relevance judgment maka tidak dievaluasi
             if (!relevanceJudgement.containsKey(queryId))
@@ -87,55 +103,19 @@ public class Main {
 
             // 1. Evaluasi BIM Model
             List<Map.Entry<Integer, Double>> resultsBIM = bimModel.scoreQuery(queryText);
-            int limitBIM = Math.min(10, resultsBIM.size());
-            System.out.println("\n[Hasil Top " + limitBIM + " - BIM Model]");
-            for (int i = 0; i < limitBIM; i++) {
-                int docId = resultsBIM.get(i).getKey();
-                double score = resultsBIM.get(i).getValue();
-                boolean isRelevant = relevantDocs.contains(docId);
-                System.out.printf("Rank %d | DocID: %d | Skor: %.4f %s\n", (i + 1), docId, score, isRelevant ? "[Relevan]" : "[Tidak relevan]");
-            }
-            System.out.println("--- Metrik Evaluasi BIM ---");
-            Evaluator.calculateMetrics(resultsBIM, relevantDocs);
+            displayResults("BIM Model", resultsBIM, relevantDocs);
 
             // 2. Evaluasi Two-Poisson Model
             List<Map.Entry<Integer, Double>> resultsTP = twoPoissonModel.scoreTwoPoisson(queryText);
-            int limitTP = Math.min(10, resultsTP.size());
-            System.out.println("\n[Hasil Top " + limitTP + " - Two-Poisson Model]");
-            for (int i = 0; i < limitTP; i++) {
-                int docId = resultsTP.get(i).getKey();
-                double score = resultsTP.get(i).getValue();
-                boolean isRelevant = relevantDocs.contains(docId);
-                System.out.printf("Rank %d | DocID: %d | Skor: %.4f %s\n", (i + 1), docId, score, isRelevant ? "[Relevan]" : "[Tidak relevan]");
-            }
-            System.out.println("--- Metrik Evaluasi Two-Poisson ---");
-            Evaluator.calculateMetrics(resultsTP, relevantDocs);
+            displayResults("Two-Poisson Model", resultsTP, relevantDocs);
 
             // 3. Evaluasi BM10 Model
             List<Map.Entry<Integer, Double>> resultsBM10 = bm10Model.scoreBM10(queryText);
-            int limitBM10 = Math.min(10, resultsBM10.size());
-            System.out.println("\n[Hasil Top " + limitBM10 + " - BM10 Model]");
-            for (int i = 0; i < limitBM10; i++) {
-                int docId = resultsBM10.get(i).getKey();
-                double score = resultsBM10.get(i).getValue();
-                boolean isRelevant = relevantDocs.contains(docId);
-                System.out.printf("Rank %d | DocID: %d | Skor: %.4f %s\n", (i + 1), docId, score, isRelevant ? "[Relevan]" : "[Tidak relevan]");
-            }
-            System.out.println("--- Metrik Evaluasi BM10 ---");
-            Evaluator.calculateMetrics(resultsBM10, relevantDocs);
+            displayResults("BM10 Model", resultsBM10, relevantDocs);
 
             // 4. Evaluasi BM25 Model
             List<Map.Entry<Integer, Double>> resultsBM25 = bm25Model.scoreBM25(queryText);
-            int limitBM25 = Math.min(10, resultsBM25.size());
-            System.out.println("\n[Hasil Top " + limitBM25 + " - BM25 Model]");
-            for (int i = 0; i < limitBM25; i++) {
-                int docId = resultsBM25.get(i).getKey();
-                double score = resultsBM25.get(i).getValue();
-                boolean isRelevant = relevantDocs.contains(docId);
-                System.out.printf("Rank %d | DocID: %d | Skor: %.4f %s\n", (i + 1), docId, score, isRelevant ? "[Relevan]" : "[Tidak relevan]");
-            }
-            System.out.println("--- Metrik Evaluasi BM25 ---");
-            Evaluator.calculateMetrics(resultsBM25, relevantDocs);
+            displayResults("BM25 Model", resultsBM25, relevantDocs);
 
             queriesEvaluated++;
         }

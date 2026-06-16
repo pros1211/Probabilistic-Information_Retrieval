@@ -60,7 +60,7 @@ public class Evaluator {
         br.close();
         return relevanceList;
     }
-    
+
     // method untuk kalkulasi matriks evaluasi lengkap
     public static void calculateMetrics(List<Map.Entry<Integer, Double>> results, HashSet<Integer> relevantDocs) {
         int totalRetrieved = results.size();
@@ -85,7 +85,8 @@ public class Evaluator {
         double overallPrecision = totalRetrieved > 0 ? (double) truePositive / totalRetrieved : 0.0;
         double overallRecall = totalRelevant > 0 ? (double) truePositive / totalRelevant : 0.0;
 
-        System.out.printf("Precision: %.4f | Recall: %.4f\n", overallPrecision, overallRecall);
+        System.out.printf("Precision\t\t\t%.4f\n", overallPrecision);
+        System.out.printf("Recall\t\t\t\t%.4f", overallRecall);
 
         // kalkulasi precision@K untuk beberapa variasi nilai k
         int[] kValues = {5, 10, 15};
@@ -98,7 +99,7 @@ public class Evaluator {
                 }
             }
             double pAtK = retrievedK > 0 ? (double) tpK / retrievedK : 0.0;
-            System.out.printf("Precision@%d: %.4f | ", k, pAtK);
+            System.out.printf("\nPrecision@%d\t\t\t%.4f", k, pAtK);
         }
         System.out.println();
 
@@ -125,6 +126,6 @@ public class Evaluator {
         }
         // bagi untuk mendapatkan rata-rata
         double avg11Point = sum11Point / 11.0;
-        System.out.printf("11-Point Average Precision: %.4f\n", avg11Point);
+        System.out.printf("11-Point Average Precision\t%.4f\n", avg11Point);
     }
 }
