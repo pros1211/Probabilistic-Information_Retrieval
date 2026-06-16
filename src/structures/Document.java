@@ -1,3 +1,5 @@
+package src.structures;
+
 public class Document {
     private int docId;
     private String name;

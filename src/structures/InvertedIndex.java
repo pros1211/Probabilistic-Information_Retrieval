@@ -1,8 +1,12 @@
+package src.structures;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+
+import src.utils.TextProcessor;
 
 public class InvertedIndex {
     // atribut untuk menyimpan path file dataset
@@ -68,6 +72,7 @@ public class InvertedIndex {
         if (this.totalDocuments > 0) {
             this.avgdl = (double) totalLengthAllDocs / this.totalDocuments;
         }
+        br.close();
     }
 
     // method tokenisasi isi dokumen dan hitung term frequency di dokumen

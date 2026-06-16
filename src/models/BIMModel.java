@@ -1,51 +1,47 @@
+package src.models;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class TwoPoisson {
-    private InvertedIndex invertedIndex;
-    private double k = 1.2;
+import src.structures.*;
+import src.utils.TextProcessor;
 
-    public TwoPoisson(InvertedIndex invertedIndex) {
+public class BIMModel {
+    private InvertedIndex invertedIndex;
+
+    public BIMModel(InvertedIndex invertedIndex) {
         this.invertedIndex = invertedIndex;
     }
 
     private double calculateWt(String term) {
-        int nt = invertedIndex.getDocumentFrequency(term);
         int n = invertedIndex.getTotalDoc();
+        int nt = invertedIndex.getDocumentFrequency(term);
         if (nt == 0) {
             return 0.0;
         }
         return Math.log(0.5 * ((double) n / nt));
     }
 
-    public List<Map.Entry<Integer, Double>> scoreTwoPoisson(String queryText) {
-        LinkedList<String> queryTerms = TextProcessor.tokenizeString(queryText);
-        HashMap<Integer, Double> docScore = new HashMap<>();
+    public List<Map.Entry<Integer, Double>> scoreQuery(String textQuery) {
+        LinkedList<String> queryList = TextProcessor.tokenizeString(textQuery);
+        HashSet<String> queryTerms = new HashSet<>(queryList);
+        HashMap<Integer, Double> documentScore = new HashMap<>();
         for (String term : queryTerms) {
             double wt = calculateWt(term);
             if (wt == 0.0)
                 continue;
             List<Posting> postings = invertedIndex.getPostingList(term);
-
-            // looping setiap dokumen yang mengandung term
             for (Posting posting : postings) {
                 int docId = posting.getDocId();
-                int tf = posting.getTf();
-
-                double numerator = tf * (k + 1) * wt;
-                double denominator = tf + k;
-
-                double termScore = numerator / denominator;
-
-                double currentScore = docScore.getOrDefault(docId, 0.0);
-                docScore.put(docId, currentScore + termScore);
+                double currentScore = documentScore.getOrDefault(docId, 0.0);
+                documentScore.put(docId, currentScore + wt);
             }
         }
-        return sortResults(docScore);
+        return sortResults(documentScore);
     }
 
     private List<Map.Entry<Integer, Double>> sortResults(HashMap<Integer, Double> scoresMap) {

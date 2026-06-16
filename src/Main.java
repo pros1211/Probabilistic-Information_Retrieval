@@ -1,5 +1,12 @@
+package src;
+
 import java.io.*;
 import java.util.*;
+
+import src.models.*;
+import src.structures.*;
+import src.utils.Evaluator;
+import src.utils.TextProcessor;
 
 public class Main {
     public static void cekTermFrequency(InvertedIndex index, String queryText) {
