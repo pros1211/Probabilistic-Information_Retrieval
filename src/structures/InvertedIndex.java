@@ -72,6 +72,7 @@ public class InvertedIndex {
         if (this.totalDocuments > 0) {
             this.avgdl = (double) totalLengthAllDocs / this.totalDocuments;
         }
+        // tutup buffered reader
         br.close();
     }
 
@@ -125,5 +126,14 @@ public class InvertedIndex {
 
     public String getName(int docId) {
         return listDoc.get(docId).getName();
+    }
+
+    // getter untuk avgdl dan mengambil dokumen spesifik
+    public double getAvgdl() {
+        return this.avgdl;
+    }
+
+    public Document getDocument(int docId) {
+        return listDoc.get(docId);
     }
 }
