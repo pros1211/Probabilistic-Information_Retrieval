@@ -52,7 +52,8 @@ public class Main {
         System.out.println("METRIK EVALUASI " + modelName.toUpperCase());
         Evaluator.calculateMetrics(results, relevantDocs);
     }
-public static void main(String[] args) throws IOException {
+
+    public static void main(String[] args) throws IOException {
         // atribut docFile cranfield berisi dokumen cranfield
         File docFile = new File("./datasets/cran.all.1400");
         // atribut query test dari cranfield dataset
@@ -70,7 +71,7 @@ public static void main(String[] args) throws IOException {
         // inisialisasi semua model probabilistik dengan inverted index yang dibuat
         BIMModel bimModel = new BIMModel(dictionary);
         TwoPoisson twoPoissonModel = new TwoPoisson(dictionary);
-        BM10 bm10Model = new BM10(dictionary);
+        BM11 bm11Model = new BM11(dictionary);
         BM25 bm25Model = new BM25(dictionary);
 
         // load test query dari cran.qry
@@ -78,20 +79,22 @@ public static void main(String[] args) throws IOException {
         // load relevance judgment untuk evaluasi dokumen hasil
         HashMap<Integer, HashSet<Integer>> relevanceJudgement = Evaluator.loadRelevance(relevanceFile);
 
+        // sorting query ID agar urutan evaluasi konsisten pada setiap run
+        List<Integer> sortedQueryIds = new ArrayList<>(testQueries.keySet());
+        Collections.sort(sortedQueryIds);
+
         // query dievaluasi
         int queriesEvaluated = 0;
         
         // loop test query cranfield sebanyak 5 (sebagai sampel pengujian)
-        for (Map.Entry<Integer, String> entry : testQueries.entrySet()) {
+        for (int queryId : sortedQueryIds) {
             if (queriesEvaluated >= 5) {
                 break;
             }
             
-            // ambil id query dan text query
-            int queryId = entry.getKey();
-            String queryText = entry.getValue();
+            String queryText = testQueries.get(queryId);
             System.out.println("\n\n\n\n");
-            System.out.println("==================================================================");
+            System.out.println("====================================================");
             System.out.println("Query #" + queryId + "\n“" + queryText + "”");
             
             // jika query tidak ada di relevance judgment maka tidak dievaluasi
@@ -109,9 +112,9 @@ public static void main(String[] args) throws IOException {
             List<Map.Entry<Integer, Double>> resultsTP = twoPoissonModel.scoreTwoPoisson(queryText);
             displayResults("Two-Poisson Model", resultsTP, relevantDocs);
 
-            // 3. Evaluasi BM10 Model
-            List<Map.Entry<Integer, Double>> resultsBM10 = bm10Model.scoreBM10(queryText);
-            displayResults("BM10 Model", resultsBM10, relevantDocs);
+            // 3. Evaluasi BM11 Model
+            List<Map.Entry<Integer, Double>> resultsBM11 = bm11Model.scoreBM11(queryText);
+            displayResults("BM11 Model", resultsBM11, relevantDocs);
 
             // 4. Evaluasi BM25 Model
             List<Map.Entry<Integer, Double>> resultsBM25 = bm25Model.scoreBM25(queryText);

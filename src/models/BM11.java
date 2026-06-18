@@ -9,12 +9,12 @@ import java.util.Map;
 import src.structures.*;
 import src.utils.TextProcessor;
 
-public class BM10 {
+public class BM11 {
     private InvertedIndex invertedIndex;
     // atribut parameter k
     private double k = 1.2;
 
-    public BM10(InvertedIndex invertedIndex) {
+    public BM11(InvertedIndex invertedIndex) {
         this.invertedIndex = invertedIndex;
     }
 
@@ -28,10 +28,12 @@ public class BM10 {
         return Math.log(0.5 * ((double) n / nt));
     }
 
-    // method untuk kalkulasi skor bm10 tanpa mempertimbangkan panjang dokumen
-    public List<Map.Entry<Integer, Double>> scoreBM10(String queryText) {
+    // method untuk kalkulasi skor bm11 dengan mempertimbangkan panjang dokumen
+    public List<Map.Entry<Integer, Double>> scoreBM11(String queryText) {
         LinkedList<String> queryTerms = TextProcessor.tokenizeString(queryText);
         HashMap<Integer, Double> docScore = new HashMap<>();
+        // ambil rata-rata panjang dokumen
+        double avgdl = invertedIndex.getAvgdl();
 
         // loop tiap term pada query
         for (String term : queryTerms) {
@@ -44,10 +46,12 @@ public class BM10 {
             for (Posting posting : postings) {
                 int docId = posting.getDocId();
                 int tf = posting.getTf();
+                // ambil panjang dokumen spesifik
+                int ld = invertedIndex.getDocument(docId).getLength();
 
                 double numerator = tf * (k + 1) * wt;
-                // rumus bm10 tanpa normalisasi (ekuivalen dengan two poisson model dasar)
-                double denominator = tf + k;
+                // rumus bm11 dengan normalisasi panjang dokumen
+                double denominator = tf + k * (ld / avgdl);
 
                 double termScore = numerator / denominator;
 
