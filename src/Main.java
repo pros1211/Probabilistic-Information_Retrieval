@@ -41,7 +41,7 @@ public class Main {
         int limit = Math.min(10, results.size());
         System.out.println("\n");
         System.out.println("TOP " + limit + " " + modelName.toUpperCase() + "");
-        System.out.println("Rank\tDocID\tSkor\tRelevan?");
+        System.out.println("Rank\tDocID\tSkor\t  Relevan?");
         for (int i = 0; i < limit; i++) {
             int docId = results.get(i).getKey();
             double score = results.get(i).getValue();
